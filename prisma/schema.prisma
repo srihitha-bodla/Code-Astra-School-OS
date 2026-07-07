@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  phone         String?
+  passwordHash  String
+  role          String    // ADMIN, TEACHER, PARENT, STUDENT
+  schoolId      String
+  status        String    @default("ACTIVE")
+  createdAt     DateTime  @default(now())
+
+  school        School    @relation(fields: [schoolId], references: [id])
+}
+
+model School {
+  id            String    @id @default(uuid())
+  name          String
+  address       String
+  city          String
+  state         String
+  country       String
+  locale        String    @default("en")
+  timezone      String    @default("Asia/Kolkata")
+  createdAt     DateTime  @default(now())
+
+  users         User[]
+  classes       Class[]
+  students      Student[]
+}
+
+model Class {
+  id            String    @id @default(uuid())
+  schoolId      String
+  name          String
+  section       String
+  teacherId     String
+  createdAt     DateTime  @default(now())
+
+  school        School    @relation(fields: [schoolId], references: [id])
+  students      Student[]
+}
+
+model Student {
+  id               String    @id @default(uuid())
+  schoolId         String
+  classId          String
+  name             String
+  admissionNumber  String
+  rollNumber       String
+  parentContactId  String
+  createdAt        DateTime  @default(now())
+
+  school           School    @relation(fields: [schoolId], references: [id])
+  class            Class     @relation(fields: [classId], references: [id])
+  progress         Progress[]
+}
+
+model Progress {
+  id          String   @id @default(uuid())
+  studentId   String
+  subject     String
+  xp          Int      @default(0)
+  level       Int      @default(1)
+  updatedAt   DateTime @updatedAt
+
+  student     Student  @relation(fields: [studentId], references: [id])
+}

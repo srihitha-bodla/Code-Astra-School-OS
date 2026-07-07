@@ -1,0 +1,67 @@
+"use client";
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Home, BarChart2, Shield, Settings, Users, LogOut } from "lucide-react";
+import Logo from "@/components/Logo";
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  const navItems = [
+    { name: "Dashboard", href: "/admin/dashboard", icon: <Home size={24} /> },
+    { name: "Analytics", href: "/admin/analytics", icon: <BarChart2 size={24} /> },
+    { name: "Directory", href: "/admin/directory", icon: <Users size={24} /> },
+    { name: "Security", href: "/admin/security", icon: <Shield size={24} /> },
+    { name: "Settings", href: "/admin/settings", icon: <Settings size={24} /> },
+  ];
+
+  return (
+    <div className="flex h-screen bg-[#0b1020] text-white overflow-hidden font-inter">
+      
+      {/* SIDEBAR */}
+      <aside className="w-[80px] bg-[#121826] border-r border-white/10 flex flex-col items-center py-8 z-10 shadow-2xl">
+        
+        {/* Logo */}
+        <Link href="/" className="mb-12 hover:-translate-y-1 transition-transform">
+          <Logo className="w-10 h-10 shadow-[0_0_15px_rgba(139,124,255,0.4)]" />
+        </Link>
+
+        {/* Nav Links */}
+        <nav className="flex flex-col gap-6 w-full px-4">
+          {navItems.map((item) => {
+            const active = pathname === item.href || pathname.startsWith(item.href + '/');
+            return (
+              <Link key={item.name} href={item.href}
+                className={`relative flex items-center justify-center w-full aspect-square rounded-xl transition-all ${
+                  active 
+                  ? "bg-[#8b7cff] text-black shadow-[0_0_10px_rgba(139,124,255,0.3)]" 
+                  : "bg-transparent text-gray-400 hover:bg-white/5 hover:text-white"
+                }`}
+                title={item.name}
+              >
+                {item.icon}
+              </Link>
+            )
+          })}
+        </nav>
+
+        <div className="mt-auto mb-8">
+          <Link href="/" title="Back to Site" className="text-gray-400 hover:text-white transition-colors flex items-center justify-center w-10 h-10 rounded-xl hover:bg-white/5">
+            <LogOut size={24} />
+          </Link>
+        </div>
+      </aside>
+
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 h-full overflow-y-auto relative">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#8b7cff] via-[#0b1020] to-[#0b1020]" />
+        
+        <div className="relative z-10 p-10 max-w-6xl mx-auto min-h-full">
+          {children}
+        </div>
+      </main>
+
+    </div>
+  );
+}
